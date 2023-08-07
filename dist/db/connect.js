@@ -8,25 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const connect_1 = require("./db/connect");
-dotenv_1.default.config();
-const app = (0, express_1.default)();
-const port = process.env.PORT;
-function main() {
+exports.connectToDatabase = void 0;
+const mongodb_1 = require("mongodb");
+function connectToDatabase() {
     return __awaiter(this, void 0, void 0, function* () {
-        const database = yield (0, connect_1.connectToDatabase)();
+        const uri = 'mongodb://localhost:27017';
+        const dbName = 'P2P';
+        const client = new mongodb_1.MongoClient(uri);
+        try {
+            yield client.connect();
+            console.log('Connected to MongoDB');
+            const database = client.db(dbName);
+            return database;
+        }
+        catch (err) {
+            console.error('Error connecting to MongoDB:', err);
+            throw err;
+        }
     });
 }
-main().catch(console.error);
-app.get('/', (req, res) => {
-    res.send('Express + Typescript server');
-});
-app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+exports.connectToDatabase = connectToDatabase;
